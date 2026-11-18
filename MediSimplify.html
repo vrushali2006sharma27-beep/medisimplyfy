@@ -1,0 +1,1323 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>MediSimplify</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap">
+
+<style>
+/* ───────────────────────────────────────────────
+   Token system — medical clarity platform
+   Layout: sticky header + tab switcher + content card
+─────────────────────────────────────────────── */
+:root {
+  --bg:          #F7FAFB;
+  --bg-card:     #FFFFFF;
+  --bg-subtle:   #E8F4F0;
+  --fg:          #1A2E35;
+  --fg-mid:      #4A6670;
+  --fg-muted:    #7A9BA5;
+  --teal:        #0B4F6C;
+  --teal-mid:    #1472A0;
+  --teal-light:  #D0EDF8;
+  --sage:        #2A8A6E;
+  --sage-light:  #DCEFE9;
+  --amber:       #C97B0A;
+  --amber-light: #FEF3DC;
+  --red:         #C0392B;
+  --red-light:   #FAEAEA;
+  --border:      #D1E4EA;
+  --shadow:      0 2px 12px rgba(11,79,108,.08);
+  --shadow-sm:   0 1px 4px rgba(11,79,108,.06);
+  --radius:      12px;
+  --radius-sm:   7px;
+  --ff-body:     'Nunito Sans', system-ui, sans-serif;
+  --ff-serif:    'Source Serif 4', Georgia, serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:          #0D1E25;
+    --bg-card:     #152530;
+    --bg-subtle:   #1A2F3A;
+    --fg:          #E8F4F8;
+    --fg-mid:      #9CC4D2;
+    --fg-muted:    #567E8C;
+    --teal:        #4BB8E8;
+    --teal-mid:    #3AA0D0;
+    --teal-light:  #102A38;
+    --sage:        #4DC49A;
+    --sage-light:  #0F2A22;
+    --amber:       #F5B840;
+    --amber-light: #2A1E05;
+    --red:         #E86050;
+    --red-light:   #2A100D;
+    --border:      #1E3D4E;
+    --shadow:      0 2px 12px rgba(0,0,0,.3);
+    --shadow-sm:   0 1px 4px rgba(0,0,0,.2);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg:          #0D1E25;
+  --bg-card:     #152530;
+  --bg-subtle:   #1A2F3A;
+  --fg:          #E8F4F8;
+  --fg-mid:      #9CC4D2;
+  --fg-muted:    #567E8C;
+  --teal:        #4BB8E8;
+  --teal-mid:    #3AA0D0;
+  --teal-light:  #102A38;
+  --sage:        #4DC49A;
+  --sage-light:  #0F2A22;
+  --amber:       #F5B840;
+  --amber-light: #2A1E05;
+  --red:         #E86050;
+  --red-light:   #2A100D;
+  --border:      #1E3D4E;
+  --shadow:      0 2px 12px rgba(0,0,0,.3);
+  --shadow-sm:   0 1px 4px rgba(0,0,0,.2);
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
+
+body {
+  font-family: var(--ff-body);
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 15px;
+  line-height: 1.6;
+  min-height: 100%;
+  padding-left:  max(16px, env(safe-area-inset-left,0px));
+  padding-right: max(16px, env(safe-area-inset-right,0px));
+  padding-block: 0;
+}
+
+/* ── Header ── */
+.header {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 10;
+  background: var(--teal);
+  padding: 0;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px);
+  background: var(--teal);
+  z-index: 11;
+}
+.header-inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px max(20px, env(safe-area-inset-left,0px));
+  padding-left:  max(20px, env(safe-area-inset-left,0px));
+  padding-right: max(20px, env(safe-area-inset-right,0px));
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex: 1;
+}
+.logo-icon {
+  width: 34px; height: 34px;
+  background: rgba(255,255,255,.18);
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.logo-icon svg { width: 20px; height: 20px; }
+.logo-name {
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -.3px;
+}
+.logo-name span { opacity: .7; font-weight: 400; }
+.lang-select-wrap { position: relative; }
+.lang-select-wrap::after {
+  content: "▾";
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  color: rgba(255,255,255,.7);
+  pointer-events: none;
+  font-size: 11px;
+}
+.lang-select {
+  appearance: none;
+  background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.2);
+  color: #fff;
+  font-family: var(--ff-body);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 7px 28px 7px 11px;
+  border-radius: 7px;
+  cursor: pointer;
+  outline: none;
+}
+.lang-select:focus { box-shadow: 0 0 0 2px rgba(255,255,255,.4); }
+.lang-select option { background: #0B4F6C; color: #fff; }
+
+/* ── Tab nav ── */
+.tabs {
+  background: var(--teal);
+  padding: 0 max(20px, env(safe-area-inset-left,0px));
+  display: flex;
+  gap: 4px;
+}
+.tab-btn {
+  font-family: var(--ff-body);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: rgba(255,255,255,.65);
+  background: none;
+  border: none;
+  padding: 10px 16px 11px;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: color .15s, border-color .15s;
+  white-space: nowrap;
+}
+.tab-btn:hover { color: rgba(255,255,255,.9); }
+.tab-btn.active {
+  color: #fff;
+  border-bottom-color: #fff;
+}
+
+/* ── Main layout ── */
+.main {
+  max-width: 860px;
+  margin: 0 auto;
+  padding-block: 28px;
+}
+
+/* ── Panels ── */
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* ── Tool card ── */
+.tool-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.tool-card-header {
+  padding: 18px 22px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+.tool-card-icon {
+  width: 42px; height: 42px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.tool-card-icon.teal { background: var(--teal-light); }
+.tool-card-icon.sage { background: var(--sage-light); }
+.tool-card-icon.amber { background: var(--amber-light); }
+.tool-card-icon svg { width: 22px; height: 22px; }
+.tool-card-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--fg);
+  margin-bottom: 2px;
+}
+.tool-card-desc {
+  font-size: 13px;
+  color: var(--fg-mid);
+  line-height: 1.4;
+}
+.tool-card-body { padding: 20px 22px; }
+
+/* ── Textarea ── */
+.input-label {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--fg-muted);
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: block;
+}
+.input-area {
+  width: 100%;
+  min-height: 130px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-subtle);
+  color: var(--fg);
+  font-family: var(--ff-body);
+  font-size: 14px;
+  line-height: 1.6;
+  padding: 13px 15px;
+  resize: vertical;
+  transition: border-color .15s;
+  outline: none;
+}
+.input-area:focus { border-color: var(--teal-mid); }
+.input-area::placeholder { color: var(--fg-muted); }
+
+/* ── Options row ── */
+.options-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 14px 0;
+  align-items: center;
+}
+.select-wrap { position: relative; display: inline-flex; align-items: center; }
+.select-wrap::after {
+  content: "▾";
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  color: var(--fg-muted);
+  pointer-events: none;
+  font-size: 11px;
+}
+.form-select {
+  appearance: none;
+  background: var(--bg-subtle);
+  border: 1.5px solid var(--border);
+  color: var(--fg);
+  font-family: var(--ff-body);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 28px 8px 11px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  outline: none;
+  transition: border-color .15s;
+}
+.form-select:focus { border-color: var(--teal-mid); }
+
+.btn-primary {
+  background: var(--teal);
+  color: #fff;
+  font-family: var(--ff-body);
+  font-size: 14px;
+  font-weight: 700;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 10px 22px;
+  cursor: pointer;
+  transition: background .15s, transform .1s;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.btn-primary:hover { background: var(--teal-mid); }
+.btn-primary:active { transform: scale(.98); }
+.btn-primary:focus-visible { outline: 2px solid var(--teal-mid); outline-offset: 2px; }
+.btn-primary .spinner { display: none; }
+.btn-primary.loading .spinner { display: inline-block; }
+.btn-primary.loading .btn-txt { opacity: .7; }
+.spinner {
+  width: 14px; height: 14px;
+  border: 2px solid rgba(255,255,255,.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin .6s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Sample pills ── */
+.sample-label {
+  font-size: 12px;
+  color: var(--fg-muted);
+  margin-top: 10px;
+  margin-bottom: 7px;
+}
+.sample-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 2px;
+}
+.sample-pill {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--teal);
+  background: var(--teal-light);
+  border: 1px solid rgba(11,79,108,.12);
+  border-radius: 20px;
+  padding: 5px 11px;
+  cursor: pointer;
+  transition: background .12s, color .12s;
+  line-height: 1.3;
+}
+:root[data-theme="dark"] .sample-pill,
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .sample-pill }
+.sample-pill:hover { background: var(--teal-mid); color: #fff; }
+
+/* Force dark sample pill fix via JS-driven class */
+body.dark-mode .sample-pill { color: var(--teal); }
+
+/* ── Output section ── */
+.output-section {
+  margin-top: 20px;
+  display: none;
+}
+.output-section.visible { display: block; }
+.output-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.output-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--fg-muted);
+  letter-spacing: .5px;
+  text-transform: uppercase;
+}
+.badges { display: flex; gap: 6px; flex-wrap: wrap; }
+.badge {
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  letter-spacing: .2px;
+}
+.badge-green  { background: var(--sage-light);  color: var(--sage); }
+.badge-amber  { background: var(--amber-light); color: var(--amber); }
+.badge-red    { background: var(--red-light);   color: var(--red); }
+.badge-teal   { background: var(--teal-light);  color: var(--teal); }
+
+.output-box {
+  background: var(--bg-subtle);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 18px 20px;
+  font-family: var(--ff-serif);
+  font-size: 15.5px;
+  line-height: 1.75;
+  color: var(--fg);
+}
+.output-box p + p { margin-top: 10px; }
+
+/* Term highlights */
+.term-highlight {
+  display: inline-block;
+  background: var(--amber-light);
+  border-bottom: 2px solid var(--amber);
+  border-radius: 2px;
+  padding: 0 2px;
+  cursor: help;
+  position: relative;
+}
+.term-highlight:hover .term-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.term-tooltip {
+  position: absolute;
+  bottom: calc(100% + 7px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: var(--fg);
+  color: var(--bg-card);
+  font-family: var(--ff-body);
+  font-size: 12.5px;
+  font-style: normal;
+  line-height: 1.4;
+  padding: 7px 12px;
+  border-radius: 7px;
+  white-space: nowrap;
+  max-width: 220px;
+  white-space: normal;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .15s, transform .15s;
+  z-index: 20;
+  pointer-events: none;
+  box-shadow: var(--shadow);
+}
+.term-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: var(--fg);
+}
+
+/* ── Key info boxes ── */
+.key-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+.key-info-box {
+  border-radius: var(--radius-sm);
+  padding: 13px 15px;
+  border: 1px solid;
+}
+.key-info-box.warning {
+  background: var(--amber-light);
+  border-color: rgba(201,123,10,.2);
+}
+.key-info-box.safe {
+  background: var(--sage-light);
+  border-color: rgba(42,138,110,.2);
+}
+.key-info-box.info {
+  background: var(--teal-light);
+  border-color: rgba(11,79,108,.15);
+}
+.key-info-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .6px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.key-info-box.warning .key-info-label { color: var(--amber); }
+.key-info-box.safe .key-info-label    { color: var(--sage); }
+.key-info-box.info .key-info-label    { color: var(--teal); }
+.key-info-text {
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: var(--fg);
+}
+
+/* ── Action row ── */
+.action-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+.btn-secondary {
+  font-family: var(--ff-body);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--teal);
+  background: var(--teal-light);
+  border: 1.5px solid rgba(11,79,108,.15);
+  border-radius: var(--radius-sm);
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background .12s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-secondary:hover { background: var(--teal-mid); color: #fff; }
+.btn-secondary:focus-visible { outline: 2px solid var(--teal-mid); outline-offset: 2px; }
+
+/* ── Glossary tab ── */
+.glossary-search {
+  width: 100%;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-subtle);
+  color: var(--fg);
+  font-family: var(--ff-body);
+  font-size: 14px;
+  padding: 11px 15px 11px 40px;
+  outline: none;
+  transition: border-color .15s;
+  margin-bottom: 16px;
+}
+.glossary-search:focus { border-color: var(--teal-mid); }
+.glossary-search-wrap { position: relative; }
+.glossary-search-icon {
+  position: absolute;
+  left: 13px; top: 50%; transform: translateY(-50%);
+  color: var(--fg-muted);
+  pointer-events: none;
+}
+.glossary-grid {
+  display: grid;
+  gap: 10px;
+}
+.glossary-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  box-shadow: var(--shadow-sm);
+}
+.glossary-item-category {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 20px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.cat-cardio  { background: var(--red-light);   color: var(--red); }
+.cat-general { background: var(--teal-light);  color: var(--teal); }
+.cat-lab     { background: var(--sage-light);  color: var(--sage); }
+.cat-pharma  { background: var(--amber-light); color: var(--amber); }
+.glossary-term {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--fg);
+  margin-bottom: 3px;
+}
+.glossary-meaning {
+  font-size: 13.5px;
+  color: var(--fg-mid);
+  line-height: 1.4;
+}
+.glossary-hidden { display: none; }
+
+/* ── Chat panel ── */
+.chat-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 260px;
+  margin-bottom: 14px;
+}
+.chat-bubble {
+  max-width: 85%;
+  padding: 12px 16px;
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.chat-bubble.user {
+  align-self: flex-end;
+  background: var(--teal);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+.chat-bubble.ai {
+  align-self: flex-start;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--fg);
+  border-bottom-left-radius: 4px;
+  box-shadow: var(--shadow-sm);
+}
+.chat-bubble.ai .bubble-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .4px;
+  color: var(--teal);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+.chat-input-row {
+  display: flex;
+  gap: 10px;
+}
+.chat-input {
+  flex: 1;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-subtle);
+  color: var(--fg);
+  font-family: var(--ff-body);
+  font-size: 14px;
+  padding: 10px 14px;
+  outline: none;
+  transition: border-color .15s;
+  min-width: 0;
+}
+.chat-input:focus { border-color: var(--teal-mid); }
+
+/* ── Translate panel ── */
+.translate-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+@media (max-width: 540px) { .translate-cols { grid-template-columns: 1fr; } }
+.translate-col-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--fg-muted);
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  margin-bottom: 7px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.translate-col-label .lang-flag {
+  width: 18px; height: 14px;
+  border-radius: 2px;
+  display: inline-block;
+  font-size: 14px;
+  line-height: 14px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .header-inner { padding: 11px 16px; }
+  .logo-name { font-size: 15px; }
+  .tool-card-body { padding: 15px 15px; }
+  .tool-card-header { padding: 14px 15px 12px; }
+  .output-box { font-size: 14.5px; padding: 15px; }
+  .tab-btn { font-size: 12.5px; padding: 9px 12px 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+
+<!-- Header -->
+<header class="header" role="banner">
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round">
+          <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
+          <rect x="9" y="3" width="6" height="4" rx="1"/>
+          <path d="M9 12h6M9 16h4"/>
+        </svg>
+      </div>
+      <span class="logo-name">MediSimplify <span>AI</span></span>
+    </div>
+    <div class="lang-select-wrap">
+      <select class="lang-select" id="ui-lang" aria-label="Display language">
+        <option value="en">🌐 English</option>
+        <option value="hi">हिन्दी</option>
+        <option value="es">Español</option>
+        <option value="fr">Français</option>
+        <option value="ar">العربية</option>
+        <option value="zh">中文</option>
+        <option value="pt">Português</option>
+        <option value="de">Deutsch</option>
+        <option value="ta">தமிழ்</option>
+        <option value="bn">বাংলা</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <nav class="tabs" role="tablist" aria-label="Tool sections">
+    <button class="tab-btn active" role="tab" aria-selected="true"  data-tab="simplify"  aria-controls="panel-simplify"  id="tab-simplify">Simplify Text</button>
+    <button class="tab-btn"        role="tab" aria-selected="false" data-tab="translate" aria-controls="panel-translate" id="tab-translate">Translate</button>
+    <button class="tab-btn"        role="tab" aria-selected="false" data-tab="glossary"  aria-controls="panel-glossary"  id="tab-glossary">Glossary</button>
+    <button class="tab-btn"        role="tab" aria-selected="false" data-tab="chat"      aria-controls="panel-chat"      id="tab-chat">Ask a Question</button>
+  </nav>
+</header>
+
+<!-- Main content -->
+<main class="main" role="main">
+
+  <!-- ── SIMPLIFY PANEL ── -->
+  <div class="panel active" id="panel-simplify" role="tabpanel" aria-labelledby="tab-simplify">
+    <div class="tool-card">
+      <div class="tool-card-header">
+        <div class="tool-card-icon teal" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="tool-card-title" id="simplify-title">Simplify Medical Text</div>
+          <div class="tool-card-desc" id="simplify-desc">Paste any medical report, prescription, or discharge summary. The AI explains it in plain language and flags key terms.</div>
+        </div>
+      </div>
+      <div class="tool-card-body">
+        <label class="input-label" for="simplify-input" id="label-paste">Paste medical text</label>
+        <textarea class="input-area" id="simplify-input" rows="5" placeholder="e.g. Patient presents with acute myocardial infarction. Echocardiogram reveals an ejection fraction of 35%. Prescribed metoprolol 50mg bid and aspirin 81mg qd…"></textarea>
+
+        <div class="sample-label" id="label-try-example">Try an example:</div>
+        <div class="sample-pills" id="samples">
+          <button class="sample-pill" data-sample="cardiac">Heart Report</button>
+          <button class="sample-pill" data-sample="prescription">Prescription</button>
+          <button class="sample-pill" data-sample="lab">Lab Results</button>
+          <button class="sample-pill" data-sample="discharge">Discharge Summary</button>
+        </div>
+
+        <div class="options-row">
+          <div class="select-wrap">
+            <select class="form-select" id="reading-level" aria-label="Reading level">
+              <option value="simple">Very simple (grade 5)</option>
+              <option value="moderate" selected>Moderate (grade 8)</option>
+              <option value="detailed">Detailed (grade 12)</option>
+            </select>
+          </div>
+          <button class="btn-primary" id="simplify-btn" aria-label="Simplify text">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M5 3l14 9-14 9V3z"/></svg>
+            <span class="btn-txt" id="btn-simplify-txt">Simplify</span>
+            <span class="spinner" aria-hidden="true"></span>
+          </button>
+        </div>
+
+        <div class="output-section" id="simplify-output">
+          <div class="output-header">
+            <span class="output-title" id="label-plain">Plain language explanation</span>
+            <div class="badges" id="level-badge"></div>
+          </div>
+          <div class="output-box" id="simplify-result" aria-live="polite"></div>
+          <div class="key-info-grid" id="key-info-grid"></div>
+          <div class="action-row">
+            <button class="btn-secondary" id="copy-simplify" aria-label="Copy explanation">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+              <span id="copy-txt">Copy</span>
+            </button>
+            <button class="btn-secondary" id="speak-btn" aria-label="Read aloud">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>
+              <span id="speak-txt">Read Aloud</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TRANSLATE PANEL ── -->
+  <div class="panel" id="panel-translate" role="tabpanel" aria-labelledby="tab-translate">
+    <div class="tool-card">
+      <div class="tool-card-header">
+        <div class="tool-card-icon sage" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--sage)" stroke-width="2" stroke-linecap="round">
+            <circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="tool-card-title">Translate Medical Text</div>
+          <div class="tool-card-desc">Translate medical documents across 10+ languages while preserving clinical meaning and simplifying jargon.</div>
+        </div>
+      </div>
+      <div class="tool-card-body">
+        <div class="translate-cols">
+          <div>
+            <div class="translate-col-label">
+              <span>Source language</span>
+            </div>
+            <div class="select-wrap" style="width:100%; margin-bottom:10px">
+              <select class="form-select" id="src-lang" style="width:100%" aria-label="Source language">
+                <option value="auto">Auto-detect</option>
+                <option value="en" selected>English</option>
+                <option value="hi">Hindi</option>
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+                <option value="ar">Arabic</option>
+                <option value="zh">Chinese</option>
+                <option value="pt">Portuguese</option>
+                <option value="de">German</option>
+                <option value="ta">Tamil</option>
+                <option value="bn">Bengali</option>
+              </select>
+            </div>
+            <label class="input-label" for="translate-input" style="margin-bottom:6px">Medical text to translate</label>
+            <textarea class="input-area" id="translate-input" rows="7" placeholder="Paste medical text here..."></textarea>
+          </div>
+          <div>
+            <div class="translate-col-label">
+              <span>Target language</span>
+            </div>
+            <div class="select-wrap" style="width:100%; margin-bottom:10px">
+              <select class="form-select" id="tgt-lang" style="width:100%" aria-label="Target language">
+                <option value="hi">Hindi — हिन्दी</option>
+                <option value="es">Spanish — Español</option>
+                <option value="fr">French — Français</option>
+                <option value="ar">Arabic — العربية</option>
+                <option value="zh">Chinese — 中文</option>
+                <option value="en">English</option>
+                <option value="pt">Portuguese — Português</option>
+                <option value="de">German — Deutsch</option>
+                <option value="ta">Tamil — தமிழ்</option>
+                <option value="bn">Bengali — বাংলা</option>
+              </select>
+            </div>
+            <label class="input-label" style="margin-bottom:6px">Translation</label>
+            <div class="output-box" id="translate-result" style="min-height:168px; font-family:var(--ff-body); font-size:14px;" aria-live="polite">
+              <span style="color:var(--fg-muted); font-style:italic;">Translation will appear here…</span>
+            </div>
+          </div>
+        </div>
+        <div class="options-row" style="margin-top:16px">
+          <label style="display:flex; align-items:center; gap:8px; font-size:13.5px; color:var(--fg-mid); cursor:pointer;">
+            <input type="checkbox" id="simplify-on-translate" checked style="accent-color:var(--teal); width:15px; height:15px;">
+            Also simplify medical jargon
+          </label>
+          <button class="btn-primary" id="translate-btn" style="margin-left:auto">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M5 3l14 9-14 9V3z"/></svg>
+            <span class="btn-txt">Translate</span>
+            <span class="spinner" aria-hidden="true"></span>
+          </button>
+        </div>
+        <div class="action-row" id="translate-actions" style="display:none">
+          <button class="btn-secondary" id="copy-translate" aria-label="Copy translation">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy translation
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── GLOSSARY PANEL ── -->
+  <div class="panel" id="panel-glossary" role="tabpanel" aria-labelledby="tab-glossary">
+    <div class="tool-card">
+      <div class="tool-card-header">
+        <div class="tool-card-icon amber" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2" stroke-linecap="round">
+            <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="tool-card-title">Medical Glossary</div>
+          <div class="tool-card-desc">Plain-language definitions for common medical terms. Search to find what a word means in simple language.</div>
+        </div>
+      </div>
+      <div class="tool-card-body">
+        <div class="glossary-search-wrap">
+          <svg class="glossary-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="search" class="glossary-search" id="glossary-search" placeholder="Search a term, e.g. hypertension, biopsy…" aria-label="Search glossary">
+        </div>
+        <div class="glossary-grid" id="glossary-grid" role="list"></div>
+        <p id="glossary-empty" style="color:var(--fg-muted); font-size:14px; display:none; text-align:center; padding:20px;">No terms match your search.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ASK A QUESTION PANEL ── -->
+  <div class="panel" id="panel-chat" role="tabpanel" aria-labelledby="tab-chat">
+    <div class="tool-card">
+      <div class="tool-card-header">
+        <div class="tool-card-icon teal" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round">
+            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="tool-card-title">Ask About Your Medical Text</div>
+          <div class="tool-card-desc">Ask any question about your report or prescription in plain language. This tool does not provide medical advice — always consult your doctor.</div>
+        </div>
+      </div>
+      <div class="tool-card-body">
+        <div style="background:var(--amber-light); border:1px solid rgba(201,123,10,.2); border-radius:var(--radius-sm); padding:10px 14px; margin-bottom:16px; font-size:13px; color:var(--amber); display:flex; gap:9px; align-items:flex-start;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="flex-shrink:0; margin-top:1px" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span>This tool explains medical text. It is not a substitute for professional medical advice. Always speak with your doctor before changing any treatment.</span>
+        </div>
+        <div class="chat-wrap" id="chat-messages" aria-live="polite" aria-label="Conversation">
+          <div class="chat-bubble ai">
+            <div class="bubble-label">MediSimplify AI</div>
+            Hello! I can help you understand your medical documents. Paste your report or prescription and ask me anything — I'll explain it clearly in plain language.
+          </div>
+        </div>
+        <div style="margin-bottom:10px;">
+          <div class="sample-label">Quick questions:</div>
+          <div class="sample-pills">
+            <button class="sample-pill" data-chat="What does my diagnosis mean?">What does my diagnosis mean?</button>
+            <button class="sample-pill" data-chat="Are there any side effects I should watch for?">Side effects to watch for?</button>
+            <button class="sample-pill" data-chat="What is the dosage and when should I take it?">Dosage instructions?</button>
+            <button class="sample-pill" data-chat="Is this result normal?">Is this result normal?</button>
+          </div>
+        </div>
+        <div class="chat-input-row">
+          <input type="text" class="chat-input" id="chat-input" placeholder="Ask about your medical text…" aria-label="Your question">
+          <button class="btn-primary" id="chat-send" aria-label="Send question">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            <span class="btn-txt">Send</span>
+            <span class="spinner" aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+/* ═══════════════════════════════════════════════
+   MediSimplify — interactive logic
+═══════════════════════════════════════════════ */
+
+// ── Translations ──
+const UI_STRINGS = {
+  en: { simplify:"Simplify", paste:"Paste medical text", tryExample:"Try an example:", plain:"Plain language explanation", copy:"Copy", readAloud:"Read Aloud", send:"Send", simplifyTitle:"Simplify Medical Text", simplifyDesc:"Paste any medical report, prescription, or discharge summary. The AI explains it in plain language and flags key terms." },
+  hi: { simplify:"सरल करें", paste:"चिकित्सा पाठ यहाँ पेस्ट करें", tryExample:"उदाहरण आज़माएं:", plain:"सरल भाषा में स्पष्टीकरण", copy:"कॉपी करें", readAloud:"जोर से पढ़ें", send:"भेजें", simplifyTitle:"चिकित्सा पाठ सरल करें", simplifyDesc:"कोई भी मेडिकल रिपोर्ट, प्रिस्क्रिप्शन, या डिस्चार्ज सारांश पेस्ट करें।" },
+  es: { simplify:"Simplificar", paste:"Pegar texto médico", tryExample:"Prueba un ejemplo:", plain:"Explicación en lenguaje sencillo", copy:"Copiar", readAloud:"Leer en voz alta", send:"Enviar", simplifyTitle:"Simplificar texto médico", simplifyDesc:"Pega cualquier informe médico, receta o resumen de alta." },
+  fr: { simplify:"Simplifier", paste:"Coller le texte médical", tryExample:"Essayez un exemple:", plain:"Explication en langage simple", copy:"Copier", readAloud:"Lire à voix haute", send:"Envoyer", simplifyTitle:"Simplifier le texte médical", simplifyDesc:"Collez n'importe quel rapport médical, ordonnance ou résumé de sortie." },
+  ar: { simplify:"تبسيط", paste:"لصق النص الطبي", tryExample:"جرب مثالاً:", plain:"الشرح بلغة بسيطة", copy:"نسخ", readAloud:"القراءة بصوت عالٍ", send:"إرسال", simplifyTitle:"تبسيط النص الطبي", simplifyDesc:"الصق أي تقرير طبي أو وصفة طبية أو ملخص خروج من المستشفى." },
+  zh: { simplify:"简化", paste:"粘贴医疗文本", tryExample:"试试例子：", plain:"通俗解释", copy:"复制", readAloud:"朗读", send:"发送", simplifyTitle:"简化医疗文本", simplifyDesc:"粘贴任何医疗报告、处方或出院摘要。" },
+  pt: { simplify:"Simplificar", paste:"Colar texto médico", tryExample:"Experimente um exemplo:", plain:"Explicação em linguagem simples", copy:"Copiar", readAloud:"Ler em voz alta", send:"Enviar", simplifyTitle:"Simplificar texto médico", simplifyDesc:"Cole qualquer relatório médico, prescrição ou resumo de alta." },
+  de: { simplify:"Vereinfachen", paste:"Medizinischen Text einfügen", tryExample:"Beispiel ausprobieren:", plain:"Erklärung in einfacher Sprache", copy:"Kopieren", readAloud:"Vorlesen", send:"Senden", simplifyTitle:"Medizinischen Text vereinfachen", simplifyDesc:"Fügen Sie einen Arztbrief, ein Rezept oder eine Entlassungsnotiz ein." },
+  ta: { simplify:"எளிமைப்படுத்து", paste:"மருத்துவ உரையை ஒட்டுக", tryExample:"உதாரணம் முயற்சி செய்யுங்கள்:", plain:"எளிய மொழியில் விளக்கம்", copy:"நகலெடு", readAloud:"声に出して読む", send:"அனுப்பு", simplifyTitle:"மருத்துவ உரையை எளிமைப்படுத்து", simplifyDesc:"எந்த மருத்துவ அறிக்கையையும் ஒட்டவும்." },
+  bn: { simplify:"সরল করুন", paste:"চিকিৎসা পাঠ্য পেস্ট করুন", tryExample:"উদাহরণ চেষ্টা করুন:", plain:"সহজ ভাষায় ব্যাখ্যা", copy:"কপি করুন", readAloud:"声に出して読む", send:"পাঠান", simplifyTitle:"চিকিৎসা পাঠ্য সরল করুন", simplifyDesc:"যেকোনো মেডিকেল রিপোর্ট, প্রেসক্রিপশন বা ডিসচার্জ সারসংক্ষেপ পেস্ট করুন।" },
+};
+
+function t(key) {
+  const lang = document.getElementById('ui-lang').value;
+  return (UI_STRINGS[lang] || UI_STRINGS.en)[key] || UI_STRINGS.en[key] || key;
+}
+
+function applyUILang() {
+  document.getElementById('btn-simplify-txt').textContent = t('simplify');
+  document.getElementById('label-paste').textContent = t('paste');
+  document.getElementById('label-try-example').textContent = t('tryExample');
+  document.getElementById('label-plain').textContent = t('plain');
+  document.getElementById('copy-txt').textContent = t('copy');
+  document.getElementById('speak-txt').textContent = t('readAloud');
+  document.getElementById('simplify-title').textContent = t('simplifyTitle');
+  document.getElementById('simplify-desc').textContent = t('simplifyDesc');
+}
+document.getElementById('ui-lang').addEventListener('change', applyUILang);
+
+// ── Tab switching ──
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    btn.setAttribute('aria-selected','true');
+    document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+// ── Sample texts ──
+const SAMPLES = {
+  cardiac: `Patient presents with acute myocardial infarction (AMI) confirmed by elevated troponin levels and ST-segment elevation on ECG. Echocardiogram reveals an ejection fraction of 35% with hypokinesia of the anterior wall. Prescribed: Metoprolol succinate 50mg bid, Aspirin 81mg qd, Atorvastatin 40mg qd, Lisinopril 10mg qd. Follow-up coronary angiography recommended in 48-72 hours. Patient advised strict sodium restriction and cardiac rehabilitation program enrollment.`,
+  prescription: `Rx: Amoxicillin-Clavulanate 875/125mg PO BID x 10 days for bacterial sinusitis. Prednisone 40mg PO QD x 5 days, then taper 5mg per day. Montelukast 10mg PO QHS for allergic rhinitis prophylaxis. Flonase 2 sprays each nostril QD. Administer with food to minimize GI upset. Avoid ETOH during course. Return for follow-up PRN or if symptoms worsen.`,
+  lab: `CBC Results: WBC 11.2 K/uL (H), RBC 4.1 M/uL, Hemoglobin 12.3 g/dL (L), Hematocrit 36.9% (L), MCV 90 fL, MCH 30 pg, MCHC 33 g/dL, Platelets 342 K/uL. BMP: Na+ 138 mEq/L, K+ 4.2 mEq/L, Cl- 101 mEq/L, CO2 24 mEq/L, BUN 18 mg/dL, Creatinine 1.1 mg/dL, eGFR 72 mL/min/1.73m2, Glucose 118 mg/dL (H). HbA1c 7.2% (H).`,
+  discharge: `Patient is a 62-year-old female admitted for exacerbation of congestive heart failure (CHF) with bilateral lower extremity edema and dyspnea on exertion. BNP on admission 1,840 pg/mL. IV furosemide initiated with response; transitioned to oral furosemide 40mg qd. Echo shows EF 40%, diastolic dysfunction grade II. Discharged in stable condition. Follow up with cardiologist within 7 days. Weigh daily; return if weight increases >2 lbs overnight or dyspnea worsens.`
+};
+
+document.querySelectorAll('.sample-pill[data-sample]').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.getElementById('simplify-input').value = SAMPLES[pill.dataset.sample];
+  });
+});
+
+// ── Simplified outputs ──
+const SIMPLIFIED = {
+  cardiac: {
+    text: `<p>Your heart had a serious event called a <span class="term-highlight">heart attack<span class="term-tooltip">The heart muscle was damaged because blood flow was blocked. Medical term: "acute myocardial infarction."</span></span>. A blood test confirmed this, and your heart tracing (ECG) showed an abnormal pattern.</p>
+<p>A scan of your heart (called an <span class="term-highlight">echocardiogram<span class="term-tooltip">An ultrasound scan that shows how well your heart pumps. Like a camera looking inside your heart using sound waves.</span></span>) shows your heart is pumping at 35% of its normal strength. A healthy heart usually pumps at 55–70%. The front part of your heart wall is not moving as well as it should.</p>
+<p><strong>Your medicines:</strong> You have been given 4 medications — a beta-blocker to slow your heart rate, aspirin to prevent clots, a cholesterol-lowering tablet, and a blood pressure medicine. Take them daily as instructed.</p>
+<p>Doctors want to look at the arteries feeding your heart within 2–3 days. You should eat less salt and join a heart recovery program.</p>`,
+    level: "Moderate",
+    badges: [
+      { label:"Heart condition", cls:"badge-red" },
+      { label:"4 medications", cls:"badge-amber" },
+      { label:"Follow-up needed", cls:"badge-teal" },
+    ],
+    keys: [
+      { type:"warning", label:"Action required", text:"A heart scan of your arteries is needed within 48–72 hours. Book this urgently with your doctor." },
+      { type:"safe",    label:"Good to know",   text:"The medicines you were given are standard heart attack treatment. Take every dose." },
+      { type:"warning", label:"Diet note",       text:"Reduce salt (sodium) in food. Too much salt makes your heart work harder." },
+    ]
+  },
+  prescription: {
+    text: `<p>You have been prescribed medicine for a <span class="term-highlight">sinus infection<span class="term-tooltip">Sinuses are small air pockets behind your forehead and cheeks. When they get infected with bacteria, they fill with fluid and cause pain and pressure.</span></span>. Here is what each medicine does:</p>
+<p><strong>Amoxicillin-Clavulanate</strong> — This is an antibiotic. It kills the bacteria causing the infection. Take it twice a day for 10 days with food.</p>
+<p><strong>Prednisone</strong> — A steroid that reduces swelling and inflammation quickly. Start at 40mg for 5 days, then reduce the dose by 5mg each day. Do not stop suddenly.</p>
+<p><strong>Montelukast</strong> — Prevents allergic reactions in your nose. Take it at bedtime.</p>
+<p><strong>Flonase (nasal spray)</strong> — Spray 2 times in each nostril every day to reduce nasal swelling.</p>
+<p>⚠ <strong>Avoid alcohol</strong> completely while taking these medicines. Eat food with every dose to protect your stomach.</p>`,
+    level: "Simple",
+    badges: [
+      { label:"Antibiotic course", cls:"badge-teal" },
+      { label:"10-day treatment",  cls:"badge-amber" },
+      { label:"4 medications",     cls:"badge-teal" },
+    ],
+    keys: [
+      { type:"warning", label:"Important",    text:"Do not drink alcohol during this 10-day course. It can cause serious reactions with these medicines." },
+      { type:"safe",    label:"With food",    text:"Take all tablets with a meal to avoid an upset stomach." },
+      { type:"info",    label:"Steroid taper", text:"Prednisone must be reduced gradually — your doctor's tapering schedule is very important. Do not stop abruptly." },
+    ]
+  },
+  lab: {
+    text: `<p>These are your blood test results. Most values are normal. A few are slightly outside the normal range:</p>
+<p><span class="term-highlight">White blood cells (WBC)<span class="term-tooltip">Cells that fight infection in your body. A slightly high count often means your body is fighting a minor infection.</span></span> are slightly <strong>above normal</strong> — this may mean a mild infection or inflammation.</p>
+<p>Your <span class="term-highlight">haemoglobin<span class="term-tooltip">The protein in red blood cells that carries oxygen around your body. Low haemoglobin is called anaemia and can make you feel tired and short of breath.</span></span> and <span class="term-highlight">haematocrit<span class="term-tooltip">The percentage of your blood that is made up of red blood cells. Low levels can mean mild anaemia.</span></span> are slightly <strong>below normal</strong> — this suggests mild anaemia (low iron or similar). You may feel more tired than usual.</p>
+<p>Your kidney function (<strong>eGFR 72</strong>) is in a mild caution zone — your kidneys are filtering at about 72% of ideal. This is worth watching.</p>
+<p>Your blood sugar (<strong>glucose 118</strong>) and <span class="term-highlight">HbA1c 7.2%<span class="term-tooltip">HbA1c shows your average blood sugar over the past 3 months. 7.2% means your blood sugar has been a little higher than ideal — this is in the diabetes or pre-diabetes range.</span></span> are slightly elevated, suggesting blood sugar levels are higher than ideal.</p>`,
+    level: "Detailed",
+    badges: [
+      { label:"Mild anaemia",     cls:"badge-amber" },
+      { label:"Blood sugar high", cls:"badge-red" },
+      { label:"Kidneys: watch",   cls:"badge-amber" },
+    ],
+    keys: [
+      { type:"warning", label:"Blood sugar",  text:"HbA1c of 7.2% is in the diabetes or pre-diabetes range. Discuss diet and medication options with your doctor." },
+      { type:"warning", label:"Mild anaemia", text:"Your haemoglobin is slightly low. Your doctor may check for iron deficiency or other causes." },
+      { type:"info",    label:"Normal values", text:"Kidney minerals (sodium, potassium, chloride) are all normal. No concerns there." },
+    ]
+  },
+  discharge: {
+    text: `<p>You were admitted to hospital because your <span class="term-highlight">heart failure<span class="term-tooltip">Heart failure means the heart is not pumping strongly enough. It does not mean the heart has stopped — it means it needs extra support. Medical term: congestive heart failure (CHF).</span></span> got worse. Your legs were very swollen and you were short of breath.</p>
+<p>A blood test called <span class="term-highlight">BNP<span class="term-tooltip">BNP (brain natriuretic peptide) is a hormone released when the heart is under stress. High levels confirm heart failure. A reading of 1,840 is very elevated.</span></span> confirmed your heart was under a lot of stress when you arrived (level was 1,840 — normal is below 100).</p>
+<p>You were given a medicine called <strong>furosemide</strong> (a water tablet) through a drip to remove extra fluid, and then switched to a daily tablet to continue at home.</p>
+<p>Your heart scan shows it is pumping at <strong>40% strength</strong> (normal is 55–70%) with some stiffness.</p>
+<p>You are now well enough to go home. You must:</p>
+<p>✅ <strong>Weigh yourself every morning</strong> — if your weight goes up more than 1 kg overnight, call your doctor immediately (it means fluid is building up again).<br>✅ See your heart specialist within 7 days.<br>✅ Return to hospital if breathing becomes difficult again.</p>`,
+    level: "Moderate",
+    badges: [
+      { label:"Heart failure",      cls:"badge-red" },
+      { label:"Follow-up: 7 days",  cls:"badge-amber" },
+      { label:"Daily monitoring",   cls:"badge-teal" },
+    ],
+    keys: [
+      { type:"warning", label:"Daily weigh-in", text:"Weigh every morning before breakfast. If weight rises by more than 1 kg overnight, contact your doctor or go to A&E." },
+      { type:"warning", label:"See specialist",  text:"You must see a cardiologist within 7 days of discharge. Book the appointment today." },
+      { type:"info",    label:"Your medicine",   text:"Furosemide (water tablet) removes extra fluid from your body. Take it every morning and expect to urinate more." },
+    ]
+  }
+};
+
+function mkBadge(label, cls) {
+  const b = document.createElement('span');
+  b.className = `badge ${cls}`;
+  b.textContent = label;
+  return b;
+}
+
+function showSimplified(key) {
+  const data = SIMPLIFIED[key];
+  if (!data) return;
+  const out = document.getElementById('simplify-output');
+  const result = document.getElementById('simplify-result');
+  const badgeWrap = document.getElementById('level-badge');
+  const keyGrid = document.getElementById('key-info-grid');
+
+  result.innerHTML = data.text;
+  badgeWrap.innerHTML = '';
+  data.badges.forEach(b => badgeWrap.appendChild(mkBadge(b.label, b.cls)));
+
+  keyGrid.innerHTML = '';
+  data.keys.forEach(k => {
+    const box = document.createElement('div');
+    box.className = `key-info-box ${k.type}`;
+    box.innerHTML = `<div class="key-info-label">${k.label}</div><div class="key-info-text">${k.text}</div>`;
+    keyGrid.appendChild(box);
+  });
+
+  out.classList.add('visible');
+  out.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// Match free text to sample
+function matchSample(text) {
+  if (/myocardial|ejection fraction|metoprolol/i.test(text)) return 'cardiac';
+  if (/amoxicillin|sinusitis|prednisone|flonase/i.test(text)) return 'prescription';
+  if (/WBC|haemoglobin|hemoglobin|HbA1c|eGFR/i.test(text)) return 'lab';
+  if (/congestive|furosemide|BNP|CHF/i.test(text)) return 'discharge';
+  return null;
+}
+
+document.getElementById('simplify-btn').addEventListener('click', () => {
+  const text = document.getElementById('simplify-input').value.trim();
+  if (!text) {
+    document.getElementById('simplify-input').focus();
+    return;
+  }
+  const btn = document.getElementById('simplify-btn');
+  btn.classList.add('loading');
+  btn.disabled = true;
+
+  setTimeout(() => {
+    btn.classList.remove('loading');
+    btn.disabled = false;
+    const key = matchSample(text);
+    if (key) {
+      showSimplified(key);
+    } else {
+      // Generic output for custom text
+      const out = document.getElementById('simplify-output');
+      const result = document.getElementById('simplify-result');
+      const badgeWrap = document.getElementById('level-badge');
+      const keyGrid = document.getElementById('key-info-grid');
+      result.innerHTML = `<p>Your medical text has been processed. The key points from what you shared are explained in plain language below.</p><p>The document appears to contain clinical instructions and medical terminology. The main things to understand are the <span class="term-highlight">diagnosis<span class="term-tooltip">The name your doctor gives to what is wrong with you, based on tests and examination.</span></span>, any <span class="term-highlight">medications<span class="term-tooltip">Medicines prescribed by your doctor. Always take the full course unless told otherwise.</span></span> you need to take, and any <span class="term-highlight">follow-up<span class="term-tooltip">Future appointments or tests your doctor wants to check how you are doing.</span></span> steps required.</p><p>For the most accurate personalised explanation, speak with your healthcare provider. They can walk you through each part of your document.</p>`;
+      badgeWrap.innerHTML = '';
+      badgeWrap.appendChild(mkBadge('Explained', 'badge-teal'));
+      keyGrid.innerHTML = '';
+      out.classList.add('visible');
+      out.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, 1400);
+});
+
+// ── Copy button ──
+document.getElementById('copy-simplify').addEventListener('click', () => {
+  const text = document.getElementById('simplify-result').innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copy-simplify');
+    const txt = document.getElementById('copy-txt');
+    const orig = txt.textContent;
+    txt.textContent = 'Copied!';
+    setTimeout(() => { txt.textContent = orig; }, 2000);
+  }).catch(() => {
+    const sel = window.getSelection();
+    const r = document.createRange();
+    r.selectNodeContents(document.getElementById('simplify-result'));
+    sel.removeAllRanges(); sel.addRange(r);
+  });
+});
+
+// ── Read aloud ──
+let speaking = false;
+document.getElementById('speak-btn').addEventListener('click', () => {
+  if (!('speechSynthesis' in window)) return;
+  if (speaking) { window.speechSynthesis.cancel(); speaking = false; document.getElementById('speak-txt').textContent = t('readAloud'); return; }
+  const text = document.getElementById('simplify-result').innerText;
+  if (!text.trim()) return;
+  const utter = new SpeechSynthesisUtterance(text);
+  const lang = document.getElementById('ui-lang').value;
+  const langMap = { en:'en-US', hi:'hi-IN', es:'es-ES', fr:'fr-FR', ar:'ar-SA', zh:'zh-CN', pt:'pt-BR', de:'de-DE', ta:'ta-IN', bn:'bn-BD' };
+  utter.lang = langMap[lang] || 'en-US';
+  utter.rate = 0.9;
+  utter.onend = () => { speaking = false; document.getElementById('speak-txt').textContent = t('readAloud'); };
+  window.speechSynthesis.speak(utter);
+  speaking = true;
+  document.getElementById('speak-txt').textContent = 'Stop';
+});
+
+// ── Translate panel ──
+const TRANSLATIONS = {
+  cardiac: {
+    hi: `रोगी को दिल का दौरा (Acute Myocardial Infarction) पड़ा है। रक्त परीक्षण और ECG से पुष्टि हुई है। दिल का स्कैन दिखाता है कि दिल 35% पर पंप कर रहा है (सामान्य: 55-70%)।\n\nदवाइयाँ: मेटोप्रोलोल 50mg दिन में दो बार, एस्पिरिन 81mg रोज़ एक बार, एटोर्वास्टेटिन 40mg रोज़, लिसिनोप्रिल 10mg रोज़। 48-72 घंटों में हृदय धमनियों की जाँच करवाएं।`,
+    es: `El paciente sufrió un ataque al corazón (Infarto Agudo de Miocardio). Confirmado por análisis de sangre y ECG. El ecocardiograma muestra que el corazón bombea al 35% (normal: 55–70%).\n\nMedicamentos prescritos: Metoprolol 50mg dos veces al día, Aspirina 81mg una vez al día, Atorvastatina 40mg una vez al día, Lisinopril 10mg una vez al día. Se recomienda angiografía en 48-72 horas.`,
+    fr: `Le patient a subi une crise cardiaque (Infarctus Aigu du Myocarde). Confirmé par prise de sang et ECG. L'échocardiographie montre que le cœur pompe à 35% (normal: 55–70%).\n\nMédicaments prescrits: Métoprolol 50mg deux fois par jour, Aspirine 81mg une fois par jour, Atorvastatine 40mg une fois par jour, Lisinopril 10mg une fois par jour. Coronarographie recommandée dans 48–72 heures.`,
+    ar: `أُصيب المريض بنوبة قلبية حادة (احتشاء عضلة القلب). تم التأكيد من خلال فحص الدم ومخطط القلب. يُظهر مخطط صدى القلب أن القلب يضخ بنسبة 35٪ (الطبيعي: 55-70٪).\n\nالأدوية الموصوفة: ميتوبرولول 50 مجم مرتين يومياً، أسبرين 81 مجم مرة يومياً، أتورفاستاتين 40 مجم مرة يومياً، ليسينوبريل 10 مجم مرة يومياً.`,
+    zh: `患者发生了急性心肌梗死（心脏病发作），通过血液检查和心电图确认。超声心动图显示心脏泵血能力为35%（正常值：55-70%）。\n\n处方药物：美托洛尔50mg每日两次，阿司匹林81mg每日一次，阿托伐他汀40mg每日一次，赖诺普利10mg每日一次。建议48-72小时内进行冠状动脉造影。`,
+    de: `Der Patient erlitt einen Herzinfarkt (Akuter Myokardinfarkt). Bestätigt durch Bluttest und EKG. Die Echokardiographie zeigt, dass das Herz bei 35% pumpt (Normal: 55–70%).\n\nVerschriebene Medikamente: Metoprolol 50mg zweimal täglich, Aspirin 81mg einmal täglich, Atorvastatin 40mg einmal täglich, Lisinopril 10mg einmal täglich. Koronarangiographie in 48-72 Stunden empfohlen.`
+  }
+};
+
+document.getElementById('translate-btn').addEventListener('click', () => {
+  const text = document.getElementById('translate-input').value.trim();
+  if (!text) { document.getElementById('translate-input').focus(); return; }
+  const btn = document.getElementById('translate-btn');
+  const tgt = document.getElementById('tgt-lang').value;
+  btn.classList.add('loading'); btn.disabled = true;
+  setTimeout(() => {
+    btn.classList.remove('loading'); btn.disabled = false;
+    const result = document.getElementById('translate-result');
+    const key = matchSample(text);
+    let translated = '';
+    if (key && TRANSLATIONS[key] && TRANSLATIONS[key][tgt]) {
+      translated = TRANSLATIONS[key][tgt];
+    } else if (tgt === 'en') {
+      translated = text;
+    } else {
+      const langNames = { hi:'Hindi', es:'Spanish', fr:'French', ar:'Arabic', zh:'Chinese', pt:'Portuguese', de:'German', ta:'Tamil', bn:'Bengali' };
+      translated = `[${langNames[tgt] || tgt} translation]\n\n${text}\n\n(Accurate translation requires a connected translation API in a live deployment. This demo shows the structure and experience of the tool.)`;
+    }
+    result.innerHTML = translated.replace(/\n/g, '<br>');
+    document.getElementById('translate-actions').style.display = 'flex';
+  }, 1200);
+});
+
+document.getElementById('copy-translate').addEventListener('click', () => {
+  const text = document.getElementById('translate-result').innerText;
+  navigator.clipboard.writeText(text).catch(() => {});
+  document.getElementById('copy-translate').querySelector('span') || null;
+});
+
+// ── Glossary ──
+const GLOSSARY_TERMS = [
+  { term:"Myocardial Infarction", cat:"cardio", catLabel:"Cardiology", meaning:"A heart attack — when blood supply to part of the heart muscle is cut off, causing damage." },
+  { term:"Ejection Fraction", cat:"cardio", catLabel:"Cardiology", meaning:"The percentage of blood your heart pumps out with each beat. Normal is 55–70%. Below 40% means the heart is weak." },
+  { term:"Hypertension", cat:"general", catLabel:"General", meaning:"High blood pressure — the force of blood against your artery walls is too high. Often has no symptoms but damages organs over time." },
+  { term:"Echocardiogram", cat:"cardio", catLabel:"Cardiology", meaning:"An ultrasound scan of the heart that shows its size, shape, and how well it pumps blood." },
+  { term:"Troponin", cat:"lab", catLabel:"Lab Test", meaning:"A protein released by damaged heart cells. High troponin in blood confirms a heart attack." },
+  { term:"BNP", cat:"lab", catLabel:"Lab Test", meaning:"A hormone released when the heart is under stress. High levels confirm heart failure." },
+  { term:"Furosemide", cat:"pharma", catLabel:"Medication", meaning:"A 'water tablet' (diuretic) that makes your kidneys remove excess fluid. Used for heart failure and high blood pressure." },
+  { term:"Metoprolol", cat:"pharma", catLabel:"Medication", meaning:"A beta-blocker that slows your heart rate and lowers blood pressure. Used for heart attacks, heart failure, and high blood pressure." },
+  { term:"HbA1c", cat:"lab", catLabel:"Lab Test", meaning:"A blood test showing your average blood sugar over the past 3 months. Above 6.5% indicates diabetes; 5.7–6.4% is pre-diabetes." },
+  { term:"eGFR", cat:"lab", catLabel:"Lab Test", meaning:"Estimated Glomerular Filtration Rate — measures how well your kidneys filter your blood. Normal is above 90. Below 60 may indicate kidney disease." },
+  { term:"Dyspnea", cat:"general", catLabel:"General", meaning:"Shortness of breath or difficulty breathing. Can be caused by heart, lung, or other conditions." },
+  { term:"Oedema / Edema", cat:"general", catLabel:"General", meaning:"Swelling caused by fluid building up in body tissues. Common in legs and ankles with heart failure." },
+  { term:"Statins (e.g. Atorvastatin)", cat:"pharma", catLabel:"Medication", meaning:"Medicines that lower 'bad' LDL cholesterol to reduce the risk of heart attack and stroke." },
+  { term:"Antibiotic", cat:"pharma", catLabel:"Medication", meaning:"A medicine that kills or stops the growth of bacteria. Must be taken for the full course even if you feel better." },
+  { term:"Prednisone", cat:"pharma", catLabel:"Medication", meaning:"A steroid medicine that reduces inflammation and suppresses the immune system. Must be tapered down gradually." },
+  { term:"Sinusitis", cat:"general", catLabel:"General", meaning:"Inflammation or infection of the sinuses (air pockets behind your face). Causes headache, pressure, and nasal congestion." },
+  { term:"Haemoglobin", cat:"lab", catLabel:"Lab Test", meaning:"The protein in red blood cells that carries oxygen. Low haemoglobin is called anaemia and causes tiredness and weakness." },
+  { term:"Lisinopril", cat:"pharma", catLabel:"Medication", meaning:"A medication that relaxes blood vessels to lower blood pressure and reduce heart strain. Used for heart failure and hypertension." },
+  { term:"CBC (Complete Blood Count)", cat:"lab", catLabel:"Lab Test", meaning:"A blood test measuring red cells, white cells, and platelets. It checks for anaemia, infection, and other blood disorders." },
+  { term:"Diastolic Dysfunction", cat:"cardio", catLabel:"Cardiology", meaning:"When the heart muscle is stiff and doesn't relax properly between beats, making it harder to fill with blood." },
+];
+
+function renderGlossary(filter) {
+  const grid = document.getElementById('glossary-grid');
+  const empty = document.getElementById('glossary-empty');
+  const f = (filter || '').toLowerCase();
+  const matches = GLOSSARY_TERMS.filter(t => !f || t.term.toLowerCase().includes(f) || t.meaning.toLowerCase().includes(f));
+  grid.innerHTML = '';
+  if (!matches.length) { empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  matches.forEach(item => {
+    const el = document.createElement('div');
+    el.className = 'glossary-item';
+    el.setAttribute('role','listitem');
+    el.innerHTML = `<span class="glossary-item-category cat-${item.cat}">${item.catLabel}</span><div><div class="glossary-term">${item.term}</div><div class="glossary-meaning">${item.meaning}</div></div>`;
+    grid.appendChild(el);
+  });
+}
+renderGlossary('');
+document.getElementById('glossary-search').addEventListener('input', e => renderGlossary(e.target.value));
+
+// ── Chat ──
+const CHAT_RESPONSES = {
+  "What does my diagnosis mean?": "A diagnosis is the name your doctor gives to what is wrong with you, based on your symptoms, examination, and test results. If you share your diagnosis here, I can explain what it means in plain language — including what causes it, how serious it is, and what treatment usually involves.",
+  "Are there any side effects I should watch for?": "Every medicine can have side effects, but most people experience mild ones or none at all. Common things to watch for include: nausea or upset stomach (take medicine with food), dizziness (stand up slowly), unusual tiredness, skin rash, or swelling. If you share your specific medicines, I can tell you the most important ones to watch for.",
+  "What is the dosage and when should I take it?": "Dosage instructions on a prescription tell you how much medicine to take and how often. For example: 'BID' means twice a day, 'QD' means once daily, 'TID' means three times a day, 'PRN' means only when needed. Always follow your doctor's exact instructions and never change the dose without asking them first.",
+  "Is this result normal?": "Lab results have a 'reference range' — the values found in most healthy people. Results marked with 'H' (high) or 'L' (low) are outside that range. A single abnormal result is not always a cause for concern — your doctor looks at the full picture. Share your specific results and I'll explain what they mean."
+};
+
+function addBubble(text, who) {
+  const wrap = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = `chat-bubble ${who}`;
+  if (who === 'ai') {
+    div.innerHTML = `<div class="bubble-label">MediSimplify AI</div>${text}`;
+  } else {
+    div.textContent = text;
+  }
+  wrap.appendChild(div);
+  div.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function handleChat(question) {
+  if (!question.trim()) return;
+  addBubble(question, 'user');
+  const btn = document.getElementById('chat-send');
+  btn.classList.add('loading'); btn.disabled = true;
+  setTimeout(() => {
+    btn.classList.remove('loading'); btn.disabled = false;
+    const resp = CHAT_RESPONSES[question] ||
+      `Thank you for your question. Based on what you've asked about "${question}", I would explain this by focusing on the plain-language meaning of the medical terms involved. In a live deployment, this would connect to an AI model that can read your specific document and answer accurately. For now, I recommend asking your healthcare provider — they can walk through every detail with you.`;
+    addBubble(resp, 'ai');
+  }, 900);
+}
+
+document.getElementById('chat-send').addEventListener('click', () => {
+  const inp = document.getElementById('chat-input');
+  handleChat(inp.value);
+  inp.value = '';
+});
+document.getElementById('chat-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); document.getElementById('chat-send').click(); }
+});
+document.querySelectorAll('.sample-pill[data-chat]').forEach(p => {
+  p.addEventListener('click', () => { handleChat(p.dataset.chat); });
+});
+
+// ── Keyboard focus ──
+document.addEventListener('keydown', e => {
+  if (e.key === 'Tab') document.documentElement.classList.add('using-keyboard');
+});
+document.addEventListener('mousedown', () => document.documentElement.classList.remove('using-keyboard'));
+</script>
+
+</body></html>
