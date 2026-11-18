@@ -92,7 +92,7 @@ MediSimplify AI explains medical language. It does not diagnose, prescribe, or a
 ## Project structure
 
 ```
-medisimplify.html    Single-file application — all HTML, CSS, and JavaScript
+index.html    Single-file application — all HTML, CSS, and JavaScript
 README.md            This file
 ```
 
